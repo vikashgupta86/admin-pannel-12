@@ -17,20 +17,20 @@ use App\Livewire\Frontend\Users\ProfileEdit;
 use Illuminate\Support\Facades\Route;
 
 /*
-*
-* Auth Routes
-*
-* --------------------------------------------------------------------
-*/
+ *
+ * Auth Routes
+ *
+ * --------------------------------------------------------------------
+ */
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 /*
-*
-* Frontend Routes
-*
-* --------------------------------------------------------------------
-*/
+ *
+ * Frontend Routes
+ *
+ * --------------------------------------------------------------------
+ */
 
 // home route
 Route::livewire('home', Home::class)->name('home');
@@ -49,11 +49,11 @@ Route::group(['as' => 'frontend.'], function () {
 
     Route::group(['middleware' => ['auth']], function () {
         /*
-        *
-        *  Users Routes
-        *
-        * ---------------------------------------------------------------------
-        */
+         *
+         *  Users Routes
+         *
+         * ---------------------------------------------------------------------
+         */
         $module_name = 'users';
         Route::livewire('profile/edit', ProfileEdit::class)->name("{$module_name}.profileEdit");
         Route::livewire('profile/changePassword', ChangePassword::class)->name("{$module_name}.changePassword");
@@ -66,11 +66,11 @@ Route::group(['as' => 'frontend.'], function () {
 });
 
 /*
-*
-* Backend Routes
-* These routes need view-backend permission
-* --------------------------------------------------------------------
-*/
+ *
+ * Backend Routes
+ * These routes need view-backend permission
+ * --------------------------------------------------------------------
+ */
 Route::group(['prefix' => 'admin', 'as' => 'backend.', 'middleware' => ['auth', 'can:view_backend']], function () {
     /**
      * Backend Dashboard

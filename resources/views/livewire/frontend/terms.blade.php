@@ -6,7 +6,7 @@
             <p>Welcome to {{ app_name() }}!</p>
             <p>
                 Nasir Khan Saikat and
-                <a href="https://github.com/nasirkhan/laravel-starter/graphs/contributors" target="_blank">
+                <a href="#/graphs/contributors" target="_blank">
                     contributors
                 </a>
                 built the {{ config("app.name") }} as an Open Source app. This SERVICE is provided by

@@ -91,7 +91,7 @@ yarn format
 
 ## Role - Permissions
 
-Several custom commands are available to add and update `role-permissions`. Please read the [Role - Permission Wiki page](https://github.com/nasirkhan/laravel-starter/wiki/Role-Permission), where you will find the list of commands with examples.
+Several custom commands are available to add and update `role-permissions`. Please read the [Role - Permission Wiki page](#/wiki/Role-Permission), where you will find the list of commands with examples.
 
 
 # Features
@@ -151,7 +151,7 @@ It is a modular application, and some modules are installed by default. It will 
 
 ## Installation
 
-Follow the steps mentioned below to install and run the project. You may find more details about the installation in [Installation Wiki](https://github.com/nasirkhan/laravel-starter/wiki/Installation).
+Follow the steps mentioned below to install and run the project. You may find more details about the installation in [Installation Wiki](#/wiki/Installation).
 
 1. Open the terminal and run the following command, this will download and install the `Laravel Starter` and run the post-installation commands. 
 ```bash
@@ -318,8 +318,8 @@ This project is configured with Laravel Sail (https://laravel.com/docs/sail). Yo
 
 __Home Page__
 
-![Laravel Starter Homepage Dark Mode](https://github.com/nasirkhan/laravel-starter/assets/396987/1cf5ce5a-f374-4bae-b5a3-69e8d7ff684d)
-![Laravel Starter Homepage](https://github.com/nasirkhan/laravel-starter/assets/396987/93341711-60dd-4624-8cd7-82f1c611287d)
+![Laravel Starter Homepage Dark Mode](#/assets/396987/1cf5ce5a-f374-4bae-b5a3-69e8d7ff684d)
+![Laravel Starter Homepage](#/assets/396987/93341711-60dd-4624-8cd7-82f1c611287d)
 
 __Login Page__
 
@@ -327,18 +327,18 @@ __Login Page__
 
 __Posts Page__
 
-![Laravel Starter Posts Page](https://github.com/nasirkhan/laravel-starter/assets/396987/288f56cb-0cb0-4652-be17-9f65288558bb)
+![Laravel Starter Posts Page](#/assets/396987/288f56cb-0cb0-4652-be17-9f65288558bb)
 
 __Backend Dashboard__
 
-![Laravel Starter Admin Dashboard Dark Mode](https://github.com/nasirkhan/laravel-starter/assets/396987/0f6b8201-6f6a-429f-894b-4e491cc5eba4)
-![Laravel Starter Admin Dashboard](https://github.com/nasirkhan/laravel-starter/assets/396987/f8131011-2ecc-4a11-961f-85e02cb8f7a1)
+![Laravel Starter Admin Dashboard Dark Mode](#/assets/396987/0f6b8201-6f6a-429f-894b-4e491cc5eba4)
+![Laravel Starter Admin Dashboard](#/assets/396987/f8131011-2ecc-4a11-961f-85e02cb8f7a1)
 
 ---
 
-![Laravel Starter Posts List](https://github.com/nasirkhan/laravel-starter/assets/396987/c032769e-78b2-4dbf-bc5e-687645125796)
+![Laravel Starter Posts List](#/assets/396987/c032769e-78b2-4dbf-bc5e-687645125796)
 
 ---
 
-![Edit-Posts-Laravel-Starter](https://github.com/nasirkhan/laravel-starter/assets/396987/6421b8e5-3c69-4c1f-9518-875e72be77c0)
+![Edit-Posts-Laravel-Starter](#/assets/396987/6421b8e5-3c69-4c1f-9518-875e72be77c0)
 
