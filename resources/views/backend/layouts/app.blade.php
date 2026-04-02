@@ -1,75 +1,77 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace("_", "-", app()->currentLocale()) }}" dir="{{ language_direction() }}">
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-        <link type="image/png" href="{{ asset("img/favicon.png") }}" rel="icon" />
-        <link href="{{ asset("img/favicon.png") }}" rel="apple-touch-icon" sizes="76x76" />
-        <meta name="keyword" content="{{ setting("meta_keyword") }}" />
-        <meta name="description" content="{{ setting("meta_description") }}" />
 
-        <!-- Shortcut Icon -->
-        <link href="{{ asset("img/favicon.png") }}" rel="shortcut icon" />
-        <link type="image/ico" href="{{ asset("img/favicon.png") }}" rel="icon" />
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <link type="image/png" href="{{ asset("img/favicon.png") }}" rel="icon" />
+    <link href="{{ asset("img/favicon.png") }}" rel="apple-touch-icon" sizes="76x76" />
+    <meta name="keyword" content="{{ setting("meta_keyword") }}" />
+    <meta name="description" content="{{ setting("meta_description") }}" />
 
-        <!-- CSRF Token -->
-        <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <!-- Shortcut Icon -->
+    <link href="{{ asset("img/favicon.png") }}" rel="shortcut icon" />
+    <link type="image/ico" href="{{ asset("img/favicon.png") }}" rel="icon" />
 
-        <title>@yield("title") | {{ config("app.name") }}</title>
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-        <script src="{{ asset("vendor/jquery/jquery-3.6.4.min.js") }}"></script>
+    <title>@yield("title") | {{ config("app.name") }}</title>
 
-        @vite(["resources/sass/app-backend.scss", "resources/js/app-backend.js"])
+    <script src="{{ asset("vendor/jquery/jquery-3.6.4.min.js") }}"></script>
 
-        <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css?family=Noto+Sans+Bengali+UI&display=swap" rel="stylesheet" />
-        <style>
-            body {
-                font-family: Ubuntu, 'Noto Sans Bengali UI', Arial, Helvetica, sans-serif;
-            }
-        </style>
+    @vite(["resources/sass/app-backend.scss", "resources/js/app-backend.js"])
 
-        @stack("after-styles")
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+Bengali+UI&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Ubuntu, 'Noto Sans Bengali UI', Arial, Helvetica, sans-serif;
+        }
+    </style>
 
-        <x-google-analytics />
+    @stack("after-styles")
 
-        @livewireStyles
-    </head>
+    <x-google-analytics />
 
-    <body>
-        <x-selected-theme />
+    @livewireStyles
+</head>
 
-        <!-- Sidebar -->
-        @include("backend.includes.sidebar")
-        <!-- /Sidebar -->
+<body>
+    <x-selected-theme />
 
-        <div class="wrapper d-flex flex-column min-vh-100">
-            {{-- header --}}
-            @include("backend.includes.header")
+    <!-- Sidebar -->
+    @include("backend.includes.sidebar")
+    <!-- /Sidebar -->
 
-            <div class="body flex grow">
-                <div class="container-lg px-4 py-2">
-                    @include("flash::message")
+    <div class="wrapper d-flex flex-column min-vh-100">
+        {{-- header --}}
+        @include("backend.includes.header")
 
-                    <!-- Errors block -->
-                    @include("backend.includes.errors")
-                    <!-- / Errors block -->
+        <div class="body flex grow">
+            <div class="container-lg px-4 py-2">
+                @include("flash::message")
 
-                    <!-- Main content block -->
-                    @yield("content")
-                    <!-- / Main content block -->
-                </div>
+                <!-- Errors block -->
+                @include("backend.includes.errors")
+                <!-- / Errors block -->
+
+                <!-- Main content block -->
+                @yield("content")
+                <!-- / Main content block -->
             </div>
-
-            {{-- Footer block --}}
-            <x-backend.includes.footer />
         </div>
 
-        <!-- Scripts -->
-        @livewireScripts
+        {{-- Footer block --}}
+        <x-backend.includes.footer />
+    </div>
 
-        @stack("after-scripts")
-        <!-- / Scripts -->
-    </body>
+    <!-- Scripts -->
+    @livewireScripts
+
+    @stack("after-scripts")
+    <!-- / Scripts -->
+</body>
+
 </html>

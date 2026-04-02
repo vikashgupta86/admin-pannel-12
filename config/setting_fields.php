@@ -203,7 +203,7 @@ return [
                 'label' => 'Meta Keyword', // you know what label it is
                 'rules' => 'nullable', // validation rule of laravel
                 'class' => '', // any class for input
-                'value' => 'Web Application, web app, Laravel, Laravel starter, Bootstrap, Admin, Template, Open Source, nasir khan saikat, nasirkhansaikat', // default value if you want
+                'value' => 'Web Application, web app, Laravel, Laravel starter, Bootstrap, Admin, Template, Open Source, Vikash kumar saikat, nasirkhansaikat', // default value if you want
             ],
             [
                 'type' => 'text', // input fields type

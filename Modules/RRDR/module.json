@@ -1,0 +1,13 @@
+{
+    "name": "RRDR",
+    "alias": "rrdr",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\RRDR\\Providers\\RRDRServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

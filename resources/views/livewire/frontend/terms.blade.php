@@ -5,12 +5,12 @@
         <div class="grid grid-cols-1">
             <p>Welcome to {{ app_name() }}!</p>
             <p>
-                Nasir Khan Saikat and
+                Vikash kumar Saikat and
                 <a href="#/graphs/contributors" target="_blank">
                     contributors
                 </a>
                 built the {{ config("app.name") }} as an Open Source app. This SERVICE is provided by
-                <a href="https://nasirkhn.com" target="_blank">Nasir Khan Saikat</a>
+                <a href="https://nasirkhn.com" target="_blank">Vikash kumar Saikat</a>
                 at no cost and is intended for use as is.
             </p>
             <p>

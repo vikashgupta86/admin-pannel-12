@@ -10,7 +10,7 @@ Here Frontend and Backend are completely separated with separate routes, control
 
 
 # Reporting a Vulnerability
-If you discover any security-related issues, please send an e-mail to Nasir Khan Saikat via nasir8891@gmail.com instead of using the issue tracker.
+If you discover any security-related issues, please send an e-mail to Vikash kumar Saikat via vikash.work.dev@gmail.com instead of using the issue tracker.
 
 # Appplication Demo
 Check the following demo project. It is just a straight installation of the project without any modification.
@@ -58,6 +58,14 @@ You may want to use `--force` option to overwrite the existing module. if you us
 ```php
 php artisan module:build MODULE_NAME --force
 ```
+
+if you want to delete module then 
+
+```php
+php artisan module:remove MODULE_NAME  
+ 
+```
+
 
 ## Clear All Cache
 
