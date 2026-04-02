@@ -1,0 +1,11 @@
+#WEBSHARE=webdemo
+
+
+RewriteEngine On
+
+Options -Indexes
+
+#RewriteRule ^content/([0-9]+)/([0-9]+)/([0-9]+)/([0-9]+)/?$ /show_content.php?lang=$1&level=$2&ls_id=$3&lid=$4 [L,QSA]
+
+
+#http://122.160.119.248:8080/

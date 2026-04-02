@@ -1,0 +1,187 @@
+<?php
+include '../appcode/globals.inc.php';
+include_once(dirname_r(__FILE__, 1) .'/include/include.inc.php');
+
+AjaxFilePrevent();
+userAuthenticationPageLevel();
+
+$result  = [0 => false];
+$success = false;
+$cDate   = curdatetime();
+
+/* ================= SAFE INPUT ================= */
+$frmType      = (int)($_POST['frmType'] ?? 0);
+$type_id      = (int)($_POST['type_id'] ?? 0);
+$lang_id      = (int)($_POST['lang_id'] ?? 0);
+$link_temp_id = (int)($_POST['link_temp_id'] ?? 0);
+$lid          = (int)($_POST['lid'] ?? 0);
+$lsub_type    = $_POST['lsub_type'] ?? '';
+$Engid        = (int)($_POST['Engid'] ?? 0);
+$content_type = (int)($_POST['nmnh_type_id_si'] ?? 0);
+
+/* =========================================================
+   VALIDATION
+========================================================= */
+
+if ($frmType !== 3) {
+
+    $frmVal = [];
+
+    $frmVal[] = "type_id|text|y|1|10|num|dontselect=-1|Please enter Valid option!";
+    $frmVal[] = "l_name|text|y|1|500|alnum_spcA|Please enter Valid Link Name!";
+    $frmVal[] = "l_alias|text|n|1|500|alnum_spcA|Please enter Valid Link Name!";
+    $frmVal[] = "l_title|text|y|1|500|alnum_spc|Please enter Valid Link Title!";
+    $frmVal[] = "l_bdesc|textarea|n|1|2000|alnum_spcA|Please enter Valid data!";
+    $frmVal[] = "l_key|textarea|n|1|2000|rtf|Please enter Valid data!";
+
+    // Site Type mandatory only if visible
+    if ($content_type <= 0) {
+        $frmVal[] = "nmnh_type_id_si|text|y|1|10|num|dontselect=-1|Please enter Valid option!";
+    }
+
+    switch ($type_id) {
+
+        case 1:
+            $fileMandatory = ($frmType === 2) ? 'n' : 'y';
+            $frmVal[] = "l_file|file|$fileMandatory|1|20000|file_extn=pdf;|Only PDF allowed!";
+        break;
+
+        case 2:
+            $frmVal[] = "l_url|text|y|1|500|url|Please enter Valid URL!";
+        break;
+
+        case 3:
+            $frmVal[] = "l_src|textarea|n|1|2000|alnum_spc|Please enter Valid Source!";
+            $frmVal[] = "l_mdesc|textarea|n|1|2000|alnum_spc|Please enter Valid data!";
+            $frmVal[] = "textarea2|text|y|1|500000|rtf|Please enter Valid data!";
+        break;
+    }
+
+    switch ($lsub_type) {
+
+        case '2':
+            $frmVal[] = "au_name|text|y|1|500|alnum_spcA|Please enter Valid Author Name!";
+            $frmVal[] = "pubDate|text|y|10|10|dt|Please enter Valid Date!";
+        break;
+
+        case '3':
+            $frmVal[] = "event_name|text|y|1|500|alnum_spcA|Please enter Valid Event Name!";
+            $frmVal[] = "efDate|text|y|10|10|dt|Please enter Valid Date!";
+            $frmVal[] = "etDate|text|n|10|10|dt|Please enter Valid Date!";
+        break;
+    }
+
+    $ValiStr  = implode('|$$|', $frmVal);
+    $FrmError = $chk->requestcheck($ValiStr,"formNC","div",true,true);
+
+    if ($FrmError[0]) {
+        $result[1] = $FrmError;
+        echo frm_response($result);
+        exit;
+    }
+}
+
+/* =========================================================
+   FIELD PREPARATION
+========================================================= */
+
+$FielArr = [
+    'type_id'       => $type_id,
+    'lang_id'       => $lang_id,
+    'link_name'     => htmlspecialchars($_POST['l_name'] ?? '', ENT_QUOTES),
+    'link_alias'    => htmlspecialchars($_POST['l_alias'] ?? '', ENT_QUOTES),
+    'title'         => htmlspecialchars($_POST['l_title'] ?? '', ENT_QUOTES),
+    'link_bdesc'    => htmlspecialchars($_POST['l_bdesc'] ?? '', ENT_QUOTES),
+    'keywords'      => htmlspecialchars($_POST['l_key'] ?? '', ENT_QUOTES),
+    'creator_id'    => $_SESSION['userid'],
+    'creation_date' => $cDate,
+    'l_sub_type'    => $lsub_type,
+    'eng_id'        => $Engid,
+    'content_type'  => $content_type,
+];
+
+/* =========================================================
+   TYPE SPECIFIC DATA
+========================================================= */
+
+if ($type_id == 1 && !empty($_FILES['l_file']['name'])) {
+
+    if ($_FILES['l_file']['size'] > 15728640) {
+        $result[2] = [true,'File exceeds 15MB','alert-danger'];
+        echo frm_response($result);
+        exit;
+    }
+
+    $fileName = upload('l_file', $_SESSION['uploader']);
+    if (empty($fileName)) {
+        $result[2] = [true,'File upload failed','alert-danger'];
+        echo frm_response($result);
+        exit;
+    }
+
+    $FielArr['file_name'] = $fileName;
+}
+
+if ($type_id == 2) {
+    $FielArr['url'] = $_POST['l_url'] ?? '';
+}
+
+if ($type_id == 3) {
+    rtfPathManage($_POST['textarea2'] ?? '');
+    $FielArr['source']   = htmlspecialchars($_POST['l_src'] ?? '', ENT_QUOTES);
+    $FielArr['meta_tag'] = htmlspecialchars($_POST['l_mdesc'] ?? '', ENT_QUOTES);
+    $FielArr['details']  = $_POST['textarea2'] ?? '';
+}
+
+/* =========================================================
+   SUB TYPE DATA
+========================================================= */
+
+if ($lsub_type == '2') {
+    $FielArr['author_name'] = $_POST['au_name'] ?? '';
+    $FielArr['pub_date']    = !empty($_POST['pubDate']) ? todate($_POST['pubDate']) : '';
+}
+
+if ($lsub_type == '3') {
+    $FielArr['event_name'] = $_POST['event_name'] ?? '';
+    $FielArr['evef_date']  = !empty($_POST['efDate']) ? todate($_POST['efDate']) : '';
+    $FielArr['evet_date']  = !empty($_POST['etDate']) ? todate($_POST['etDate']) : '';
+}
+
+/* =========================================================
+   CRUD
+========================================================= */
+
+if ($frmType == 1) {
+
+    $FielArr['lid'] = $lid;
+
+    $Fields = implode(',', array_keys($FielArr));
+    $Values = implode('|$$|', $FielArr);
+
+    $success = insert("web_link_temp", $Fields, $Values);
+}
+
+elseif ($frmType == 2 && $link_temp_id > 0) {
+
+    $Fields = implode('|$$|', array_keys($FielArr));
+    $Values = implode('|$$|', $FielArr);
+
+    $success = update("web_link_temp", $Fields, $Values, "link_temp_id=$link_temp_id", 1);
+}
+
+elseif ($frmType == 3 && $link_temp_id > 0) {
+
+    $success = delete("web_link_temp", "link_temp_id=$link_temp_id");
+
+    if ($lid > 0) {
+        delete("web_links_final", "link_temp_id=$link_temp_id AND lid=$lid");
+    }
+}
+
+if ($success) {
+    $result[0] = true;
+}
+
+echo frm_response($result);
+exit;

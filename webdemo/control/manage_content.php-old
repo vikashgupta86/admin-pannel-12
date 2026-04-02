@@ -1,0 +1,242 @@
+<?php include '../appcode/globals.inc.php';
+include_once(dirname_r(__FILE__, 1) .'/include/include.inc.php');
+userAuthenticationPageLevel();
+userAuthenticationMainLevel();
+include_once('include/pageHeader.inc.php');
+?>
+    <body class="hold-transition skin-blue sidebar-mini">
+        <div class="wrapper">
+            <?php include('include/top_user_info.inc.php');?>  
+          <!-- Left side column. contains the logo and sidebar -->
+          <?php include('include/left_nav.inc.php');?>
+        
+          <!-- Content Wrapper. Contains page content -->
+          <div class="content-wrapper">
+            <div class="box">
+                <div class="box-header">
+                  <h3 class="box-title">Manage Contents</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <?php include('include/chooseLang.inc.php');?>
+                </div>
+                
+                
+                
+                <?php
+                if(isset($_REQUEST['preSub']) && $_REQUEST['preSub']==1 && $frmError==false){
+                    $ShowGridFlage=true;
+                ?>
+                
+                                
+                <div class="box-body clearfix">
+                <?php if(empty($_SESSION['department'])){ ?>
+                    <div class="text-right" style="margin-bottom: 2px;"><button id="AddNew" cdata-frmT='1' class="btn btn-warning">Add New Link</button></div>
+                    <?php } ?>
+                    <div class="panel panel-default">                        
+                        <ul class="nav nav-tabs" id="myTab">
+            			  <li class="active"><a tab-ind='1' data-target="#pending" data-toggle="tab">Pending Links</a></li>
+            			  <li><a tab-ind='2' data-target="#publish" data-toggle="tab">Published Links</a></li>
+            			  <li><a tab-ind='3' data-target="#rejected" data-toggle="tab">Rejected Links</a></li>                                          			  
+            			</ul>                        
+            			<div class="tab-content">
+            			  <div class="tab-pane active" id="pending">
+                                <table id="myTable1" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Link Name (Alias)</th>
+                                            <th>Created By/On</th>
+                                            <th>Approved By/On</th>
+                                            <th>Revive By/On</th>
+                                            <th>Revive Details</th>
+                                            <th>Preview</th>                                                
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                          </div>
+            			  <div class="tab-pane" id="publish">
+                                <table id="myTable2" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Link Name (Alias)</th>
+                                            <th>Created By/On</th>
+                                            <th>Approved By/On</th>
+                                            <th>Published By/On</th>
+                                            <th>Expiry Date</th>
+                                            <th>Preview</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                          </div>
+            			  <div class="tab-pane" id="rejected">
+                                <table id="myTable3" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Link Name (Alias)</th>
+                                            <th>Created By/On</th>
+                                            <th>Rejected By/On</th>
+                                            <th>Preview</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                          </div>                			  
+            			</div>
+                    </div>
+                    <div id="ShowMsg1"></div>                    
+                    <div id="reloadGrid"></div>
+                </div>
+                <?php
+                }
+                ?>                
+                <!-- /.box-body -->
+              </div>                    
+          </div>
+          <!-- /.content-wrapper -->
+          <?php include('include/pageFooter.inc.php');?>
+          
+          <div class="control-sidebar-bg"></div>
+        </div>
+    </body>
+    <script type="text/javascript">        
+        //$(document).delegate('#AddNew,.fa-edit,.fa-trash-o,.fa-eye,.fa-eye-slash,.fa-retweet', 'click', function() {
+        $(document).delegate('#AddNew,.fa-edit,.fa-trash-o,.fa-retweet,.fa-desktop', 'click', function() {
+            var frmType=$(this).attr('cdata-frmT');
+
+            //console.log(frmType);  
+                   
+            if($.inArray(frmType,['3','4','5','6'])!='-1'){
+
+                var con=confirm('Do you really want to Proceed?');
+                var eleCtrl=$(this);
+                //console.log(con)
+                if(con){          
+                    var lid=($(this).attr('pub-lid')!=undefined)?$(this).attr('pub-lid'):'';
+                    $.base64.utf8encode = true;
+                    $.ajax({
+                        type     : "POST",
+                        dataType: "text",
+                        cache    : false,
+                        url      : '<?php echo "links_action.php?per_id=$_SESSION[per_id]&EncHid=$_SESSION[EncTok]";?>&lid='+lid,
+                        data     : {<?php echo $GLOBALS['csrf']['token'];?>,'frmType':frmType,'link_temp_id':$(this).data('link_temp_id')},
+                        beforeSend: function(){
+                            $.fn.ajaxLoading();
+                        },        
+                        success  : function(data) {                                    
+                            try{
+                                data=$.parseJSON($.base64.atob(data));                                                
+                                if(data[0]){
+                                    $('#ShowMsg1').ShowMsg({msg:'Request Completed Successfully!',alertClass:'alert-success'});
+                                    $('#reloadGrid').trigger('click');                                    
+                                    if(frmType==3)
+                                        eleCtrl.closest('tr').hide();                    
+                                }
+                                else{                    
+                                    $('#ShowMsg1').ShowMsg({msg:'Request not Completed Successfully!',alertClass:'alert-danger'});
+                                }
+                            }
+                            catch(err) {
+                                $('#ShowMsg1').ShowMsg({msg:"<strong>Error:</strong> Unexpected Response received, You may try again!",alertClass:'alert-warning'});                                
+                            }
+                                                   
+                        },
+                        error:function(){
+                            $.fn.custom_alert({msg:'Something went wrong, Please try again!'});                        
+                        },
+                        complete: function(){            
+                            $.fn.ajaxLoading({show:false});
+                        },
+                    });
+                }
+            }
+            else if(frmType=='9'){
+                
+                var lid=($(this).attr('pub-lid')!=undefined)?$(this).attr('pub-lid'):'';
+                $('.modal-container').OpenPop({
+                    url:"pub_link.php?frmType=" + frmType + "&lid="+lid+"&link_temp_id=" + $(this).data('link_temp_id') + "&lang_id=<?php echo "$_REQUEST[lang_id]";?>&type_id=<?php echo "$_REQUEST[type_id]";?>&per_id=<?php echo "$_SESSION[per_id]&EncHid=$_SESSION[EncTok]";?>",
+                });
+            }
+            else{
+
+                var lid=($(this).attr('pub-lid')!=undefined)?$(this).attr('pub-lid'):'';
+                $('.modal-container').OpenPop({
+                    url:"links.php?frmType=" + frmType + "&lid="+lid+"&link_temp_id=" + $(this).data('link_temp_id') + "&lang_id=<?php echo "$_REQUEST[lang_id]";?>&nmnh_type_id=<?php echo "$_REQUEST[nmnh_type_id]";?>&type_id=<?php echo "$_REQUEST[type_id]";?>&per_id=<?php echo "$_SESSION[per_id]&EncHid=$_SESSION[EncTok]";?>",
+                });
+            }
+        });
+        
+        var mGridTable='',mGridTable1='';
+        $(function(){   
+            if($('#myTab').length>0){
+                jQuery('#myTab a:first').tab('show');
+                tab='#pending';
+                $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {                
+                    $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+                    //console.log($(this).data('target'))
+                    tab=$(this).data('target');
+                } );
+                
+                $('#myTab a').each(function(i,d){
+                    //console.log($(d).attr('tab-ind'))
+                    tabID=$(d).attr('tab-ind');
+                    //console.log(tabID)
+                    tempTable=$('table#myTable'+tabID).DataTable( {
+                        "processing": true,
+                        "serverSide": false, 
+                        "ajax": {
+                            "url":"AjaxFill/getLinks.php?<?php echo "EncHid=$_SESSION[EncTok]";?>",
+                            "type":"POST",
+                            "data":{<?php echo $GLOBALS['csrf']['token'];?>,'tabID':tabID,'lang_id':'<?php echo "$_REQUEST[lang_id]";?>','type_id':'<?php echo "$_REQUEST[type_id]";?>','per_id':'<?php echo "$_REQUEST[per_id]";?>','nmnh_type':'<?php echo "$_REQUEST[nmnh_type_id]";?>'}
+                            },
+                        scrollY:        400,
+                        scrollCollapse: true,
+                        paging:         false,
+                        "drawCallback": function( settings ) {
+                            $('[data-toggle="tooltip"]').tooltip();
+                            }
+                    });
+                    
+                    if(tabID==1){
+                        mGridTable=tempTable;    
+                    }
+                    if(tabID==2){
+                        mGridTable1=tempTable;    
+                    }
+                })
+            }
+            
+                        
+            
+            
+            
+            //
+            
+            /*var mGridTable=$('#GridData').DataTable({                
+                'aoColumnDefs': [{'aTargets': [2],'bSortable': false}],
+                "processing": true,
+                "serverSide": false,
+                "ajax": "AjaxFill/getUsers.php?user_type_id=<?php echo "$_REQUEST[user_type_id]";?>&per_id=<?php echo "$_SESSION[per_id]&EncHid=$_SESSION[EncTok]";?>",                
+            });*/
+            
+            $(document).delegate('#reloadGrid', 'click', function ReLoadGrid() {
+                mGridTable.ajax.reload( null, false );
+                mGridTable1.ajax.reload( null, false );
+            });
+            
+            $(document).delegate('.Lpreview','click',function(){  
+                if($('#type_id').val()==3){
+                    $('.modal-container').OpenPop({
+                        url:"link_preview.php?link_temp_id=" + $(this).data('link_temp_id') + "&lang_id=<?php echo "$_REQUEST[lang_id]";?>&type_id=<?php echo "$_REQUEST[type_id]";?>&per_id=<?php echo "$_SESSION[per_id]&EncHid=$_SESSION[EncTok]";?>",
+                    });
+                }
+                else{
+                    window.open("link_preview.php?link_temp_id=" + $(this).data('link_temp_id') + "&lang_id=<?php echo "$_REQUEST[lang_id]";?>&type_id=<?php echo "$_REQUEST[type_id]";?>&per_id=<?php echo "$_SESSION[per_id]&EncHid=$_SESSION[EncTok]";?>",'_blank');                                        
+                }                
+            })
+        })
+         
+    </script>
