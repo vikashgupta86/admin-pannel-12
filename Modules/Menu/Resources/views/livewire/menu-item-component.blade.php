@@ -18,6 +18,10 @@
         </div>
     @enderror
 
+
+
+
+
     {{-- Form Mode Indicator --}}
     @if($menuItem)
         <div class="alert alert-info">
@@ -32,7 +36,24 @@
 
     {{-- Basic Information --}}
     <div class="row">
-        <div class="col-sm-4 col-12 mb-3">
+        <div class="col-sm-6 col-6 mb-3"> 
+            <div class="form-group">
+                <label for="locale" class="form-label">Language  <span class="text-danger">*</span> </label>
+                <select wire:model="locale" class="form-select">
+                    <option value="">-- Select Language --</option>
+                    <option value="1">English</option>
+                    {{-- <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="ar">Arabic</option> --}}
+                    <option value="2">Hindi</option>
+                </select>
+                @error("locale")
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+        <div class="col-sm-6 col-6 mb-3">
             <div class="form-group">
                 <label for="menu_id" class="form-label">
                     Menu
@@ -42,14 +63,20 @@
                     <option value="">-- Select Menu --</option>
                     @foreach ($menus as $id => $name)
                         <option value="{{ $id }}">{{ $name }}</option>
+                
                     @endforeach
                 </select>
                 @error("menu_id")
                     <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
-        </div>
-        <div class="col-sm-4 col-12 mb-3">
+        </div>  
+    <div class="row">
+
+
+
+       
+        <div class="col-sm-6 col-6 mb-3">
             <div class="form-group">
                 <label for="parent_id" class="form-label">Parent Item</label>
                 <select wire:model="parent_id" class="form-select" wire:key="parent-{{ $menu_id }}" @if(!$menu_id) disabled @endif>
@@ -76,19 +103,22 @@
                 @enderror
             </div>
         </div>
-        <div class="col-sm-4 col-12 mb-3">
+        <div class="col-sm-6 col-6 mb-3">
             <div class="form-group">
                 <label for="type" class="form-label">
-                    Item Type
+                    Link Type
                     <span class="text-danger">*</span>
                 </label>
                 <select wire:model.live="type" class="form-select" required>
                     <option value="">-- Select Type --</option>
-                    <option value="link">Link</option>
-                    <option value="dropdown">Dropdown</option>
+                    {{-- <option value="link">Link</option> --}}
+                    {{-- <option value="dropdown">Dropdown</option>
                     <option value="divider">Divider</option>
-                    <option value="heading">Heading</option>
-                    <option value="external">External Link</option>
+                    <option value="heading">Heading</option> --}}
+                     <option value="1">File Link</option>
+                    <option value="2">External Link</option>
+                    <option value="3">Content Link</option>
+                    
                 </select>
                 @error("type")
                     <span class="text-danger">{{ $message }}</span>
@@ -96,6 +126,8 @@
             </div>
         </div>
     </div>
+
+</div>
 
     <div class="row">
         <div class="col-sm-4 col-12 mb-3">
@@ -143,8 +175,65 @@
         </div>
     </div>
 
+ 
+@if($menu_id == 4 ) 
+
+
+ <div class="row">
+ <!-- Link Place -->
+    <div class="col-sm-6 col-6 mb-3">
+        <label class="form-label">Link Place</label>
+        <select wire:model="link_place" class="form-control">
+            <option value="-1">Select</option>
+            <option value="1">HeadTop</option>
+            <option value="2">Header</option>
+            <option value="3">Nav Bar</option>
+            <option value="4">Middle</option>
+            <option value="5">None</option>
+            <option value="6">Footer Bottom</option>
+            
+        </select>
+    </div>
+
+      <!-- Link Position -->
+    <div class="col-sm-6 col-6 mb-3">
+        <label class="form-label">Link Position</label>
+        <input type="number" wire:model="link_position" class="form-control">
+    </div>
+ </div>
+<div class="row">
+    <!-- Set as TopLink -->
+    <div class="col-sm-3 col-12 mb-3">
+        <label class="form-label">Set as TopLink</label>
+        <div>
+            <input type="checkbox" wire:model.live="is_top">
+        </div>
+    </div>  
+
+    <!-- TopLink Position -->
+    <div class="col-sm-3 col-12 mb-3">
+        <label class="form-label">TopLink Position</label>
+        <input 
+            type="number" 
+            wire:model="top_position" 
+            class="form-control"
+            {{ !$is_top ? 'disabled' : '' }}
+        >
+    </div>
+</div>
+
+  
+
+ 
+
+@endif
+
+
+
+    
+
     {{-- Navigation Properties --}}
-    @if (! in_array($type, ["divider", "heading"]))
+    @if ( in_array($type, ["divider", "heading"]))
         <div class="row">
             <div class="col-12 mb-3">
                 <h5>Navigation</h5>
@@ -212,6 +301,124 @@
                 </div>
             </div>
         </div>
+
+
+@elseif(in_array($type, ["file_link", "content_link"]))
+
+    <!-- Display Name -->
+    <div class="col-sm-4 col-12 mb-3">
+        <label class="form-label">
+            Display Name <span class="text-danger">*</span>
+        </label>
+        <input
+            type="text"
+            wire:model.blur="name"
+            class="form-control"
+            placeholder="Enter display name"
+        />
+        @error("name") <span class="text-danger">{{ $message }}</span> @enderror
+    </div>
+
+    @if($type === 'file_link')
+        <!-- FILE LINK UI -->
+        <div class="col-sm-6 col-12 mb-3">
+            <label class="form-label">
+                Upload File <span class="text-danger">*</span>
+            </label>
+            <input
+                type="file"
+                wire:model="file"
+                class="form-control"
+                accept=".pdf,.jpg,.jpeg,.png"
+            />
+            <small class="text-muted">
+                Allowed: PDF, JPG, PNG (Max: 15MB)
+            </small>
+
+            @error("file")
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
+
+    @endif
+
+    <!-- Main Link -->
+<div class="col-sm-3 col-12 mb-3">
+    <label class="form-label">Main Link</label>
+    <div>
+        <input type="checkbox" wire:model="is_main">
+        Set as Main Link
+    </div>
+</div>
+
+
+
+
+    @if($type === 'content_link')
+
+        <!-- Header Image -->
+        <div class="col-sm-6 col-12 mb-3">
+            <label class="form-label">
+                Header Image
+            </label>
+            <input
+                type="file"
+                wire:model="header_image"
+                class="form-control"
+                accept=".jpg,.jpeg,.png"
+            />
+            <small class="text-muted">
+                Recommended size: 1600 x 154 px
+            </small>
+
+            @error("header_image")
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
+
+
+        <!-- Source -->
+        <div class="col-sm-6 col-12 mb-3">
+            <label class="form-label">Source</label>
+            <textarea
+                wire:model="source"
+                class="form-control"
+                rows="2"
+            ></textarea>
+        </div>
+
+
+        <!-- Meta Description -->
+        <div class="col-12 mb-3">
+            <label class="form-label">Meta Description</label>
+            <textarea
+                wire:model="meta_description"
+                class="form-control"
+                rows="2"
+            ></textarea>
+        </div>
+
+
+        <!-- Content Editor -->
+        <div class="col-12 mb-3">
+            <label class="form-label">
+                Content <span class="text-danger">*</span>
+            </label>
+            <textarea
+                wire:model="content"
+                class="form-control"
+                rows="6"
+            ></textarea>
+
+            @error("content")
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
+
+    @endif
+
+ 
+@else
     @endif
 
     {{-- Display Properties --}}
@@ -304,7 +511,8 @@
     </div>
 
     {{-- Access Control --}}
-    <div class="row">
+    
+    {{-- <div class="row">
         <div class="col-12 mb-3">
             <h5>Access Control</h5>
         </div>
@@ -336,7 +544,7 @@
                 @enderror
             </div>
         </div>
-    </div>
+    </div> --}}
 
     {{-- Status & Visibility --}}
     <div class="row">
@@ -384,23 +592,7 @@
                 @enderror
             </div>
         </div>
-        <div class="col-sm-3 col-12 mb-3">
-            <div class="form-group">
-                <label for="locale" class="form-label">Language</label>
-                <select wire:model="locale" class="form-select">
-                    <option value="">-- Select Language --</option>
-                    <option value="en">English</option>
-                    <option value="es">Spanish</option>
-                    <option value="fr">French</option>
-                    <option value="de">German</option>
-                    <option value="ar">Arabic</option>
-                    <option value="hi">Hindi</option>
-                </select>
-                @error("locale")
-                    <span class="text-danger">{{ $message }}</span>
-                @enderror
-            </div>
-        </div>
+        
     </div>
 
     {{-- SEO Fields --}}

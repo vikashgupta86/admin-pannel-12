@@ -60,6 +60,8 @@ class MenuItemComponent extends Component
     public $custom_data;
 
     public $note;
+    public $is_top = false;
+    public $top_position;
 
     // Data for dropdowns
     public $menus = [];
@@ -103,7 +105,7 @@ class MenuItemComponent extends Component
     public function updatedType()
     {
         // Clear navigation fields for divider and heading types
-        if (in_array($this->type, ['divider', 'heading'])) {
+        if (in_array($this->type, ['divider', 'heading','content_link','file_link'])) {
             $this->url = '';
             $this->route_name = '';
             $this->route_parameters = '';

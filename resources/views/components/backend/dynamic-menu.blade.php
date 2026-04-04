@@ -1,4 +1,4 @@
-<!-- @props(['location' => 'admin-sidebar', 'cssClass' => 'sidebar-nav', 'containerTag' => 'ul'])
+ @props(['location' => 'admin-sidebar', 'cssClass' => 'sidebar-nav', 'containerTag' => 'ul'])
 
 @php
 use Modules\Menu\Models\Menu;
@@ -21,5 +21,5 @@ $processedMenus = Menu::getCachedMenuData($location, $user, $currentLocale);
     @endif
 
     @endforeach
-</{{ $containerTag }}>
-@endif -->
+</{{ $containerTag }}>  
+@endif 

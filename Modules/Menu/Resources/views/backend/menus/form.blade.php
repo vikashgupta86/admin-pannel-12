@@ -32,9 +32,10 @@
             $field_placeholder = "-- Select location --";
             $required = "required";
             $select_options = [
-                'frontend-header' => 'Frontend Header',
-                'frontend-footer' => 'Frontend Footer',
+                // 'frontend-header' => 'Frontend Header',
+                // 'frontend-footer' => 'Frontend Footer',
                 'admin-sidebar' => 'Admin Sidebar',
+                 4 => 'Frontend',
             ];
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
