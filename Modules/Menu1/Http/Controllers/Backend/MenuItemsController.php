@@ -7,7 +7,6 @@ use App\Http\Controllers\Backend\BackendBaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Modules\Menu\Models\Menu;
-use Modules\Menu\Models\MenuItem;
 
 class MenuItemsController extends BackendBaseController
 {
@@ -15,15 +14,26 @@ class MenuItemsController extends BackendBaseController
 
     public function __construct()
     {
+        // Page Title
         $this->module_title = 'MenuItem';
+
+        // module name
         $this->module_name = 'menuitems';
+
+        // directory path of the module
         $this->module_path = 'menu::backend';
+
+        // module icon
         $this->module_icon = 'fa-regular fa-sun';
-        $this->module_model = "Modules\\Menu\\Models\\MenuItem";
+
+        // module model name, path
+        $this->module_model = "Modules\Menu\Models\MenuItem";
     }
 
     /**
-     * Show the form for creating a new menu item.
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
@@ -33,9 +43,10 @@ class MenuItemsController extends BackendBaseController
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
         $module_name_singular = Str::singular($module_name);
+
         $module_action = 'Create';
 
-        logUserAccess($module_title . ' ' . $module_action);
+        logUserAccess($module_title.' '.$module_action);
 
         return view(
             "{$module_path}.{$module_name}.create",
@@ -44,30 +55,44 @@ class MenuItemsController extends BackendBaseController
     }
 
     /**
-     * Store a new menu item.
+     * Store a new resource in the database.
+     *
+     * @param  Request  $request  The request object containing the data to be stored.
+     * @return RedirectResponse The response object that redirects to the parent menu's show page.
+     *
+     * @throws Exception If there is an error during the creation of the resource.
      */
     public function store(Request $request)
     {
         $module_title = $this->module_title;
         $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
         $module_model = $this->module_model;
         $module_name_singular = Str::singular($module_name);
+
         $module_action = 'Store';
 
         $$module_name_singular = $module_model::create($request->all());
 
+        // Clear menu cache when a new menu item is created
         if ($$module_name_singular->menu) {
-            Menu::clearMenuCache($$module_name_singular->menu->location);
+            \Modules\Menu\Models\Menu::clearMenuCache($$module_name_singular->menu->location);
         }
 
-        flash("New '" . Str::singular($module_title) . "' Added")->success()->important();
-        logUserAccess($module_title . ' ' . $module_action . ' | Id: ' . $$module_name_singular->id);
+        flash("New '".Str::singular($module_title)."' Added")->success()->important();
 
+        logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
+
+        // Redirect back to the parent menu's show page
         return redirect()->route('backend.menus.show', $$module_name_singular->menu_id);
     }
 
     /**
-     * Display the specified menu item.
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Contracts\View\View
      */
     public function show($id)
     {
@@ -77,11 +102,12 @@ class MenuItemsController extends BackendBaseController
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
         $module_name_singular = Str::singular($module_name);
+
         $module_action = 'Show';
 
         $$module_name_singular = $module_model::findOrFail($id);
 
-        logUserAccess($module_title . ' ' . $module_action . ' | Id: ' . $$module_name_singular->id);
+        logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
 
         return view(
             "{$module_path}.{$module_name}.show",
@@ -90,7 +116,11 @@ class MenuItemsController extends BackendBaseController
     }
 
     /**
-     * Show the form for editing a menu item.
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit($id)
     {
@@ -100,11 +130,12 @@ class MenuItemsController extends BackendBaseController
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
         $module_name_singular = Str::singular($module_name);
+
         $module_action = 'Edit';
 
         $$module_name_singular = $module_model::findOrFail($id);
 
-        logUserAccess($module_title . ' ' . $module_action . ' | Id: ' . $$module_name_singular->id);
+        logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
 
         return view(
             "{$module_path}.{$module_name}.edit",
@@ -113,31 +144,49 @@ class MenuItemsController extends BackendBaseController
     }
 
     /**
-     * Update a menu item.
+     * Updates a resource.
+     *
+     * @param  int  $id
+     * @param  Request  $request  The request object.
+     * @param  mixed  $id  The ID of the resource to update.
+     * @return Response
+     * @return RedirectResponse The redirect response to the parent menu's show page.
+     *
+     * @throws ModelNotFoundException If the resource is not found.
      */
     public function update(Request $request, $id)
     {
         $module_title = $this->module_title;
         $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
         $module_model = $this->module_model;
         $module_name_singular = Str::singular($module_name);
+
         $module_action = 'Update';
 
         $$module_name_singular = $module_model::findOrFail($id);
+
         $$module_name_singular->update($request->all());
 
+        // Clear menu cache when a menu item is updated
         if ($$module_name_singular->menu) {
-            Menu::clearMenuCache($$module_name_singular->menu->location);
+            \Modules\Menu\Models\Menu::clearMenuCache($$module_name_singular->menu->location);
         }
 
-        flash(Str::singular($module_title) . "' Updated Successfully")->success()->important();
-        logUserAccess($module_title . ' ' . $module_action . ' | Id: ' . $$module_name_singular->id);
+        flash(Str::singular($module_title)."' Updated Successfully")->success()->important();
 
+        logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
+
+        // Redirect back to the parent menu's show page
         return redirect()->route('backend.menus.show', $$module_name_singular->menu_id);
     }
 
     /**
-     * Delete a menu item (soft delete).
+     * Destroys a record from the database.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
@@ -145,13 +194,16 @@ class MenuItemsController extends BackendBaseController
         $module_name = $this->module_name;
         $module_model = $this->module_model;
         $module_name_singular = Str::singular($module_name);
+
         $module_action = 'destroy';
 
         $$module_name_singular = $module_model::findOrFail($id);
+
         $menuId = $$module_name_singular->menu_id;
 
         $$module_name_singular->delete();
 
+        // Clear menu cache when a menu item is deleted
         if ($menuId) {
             $menu = Menu::find($menuId);
             if ($menu) {
@@ -159,31 +211,10 @@ class MenuItemsController extends BackendBaseController
             }
         }
 
-        flash(label_case($module_name_singular) . ' Deleted Successfully!')->success()->important();
-        logUserAccess($module_title . ' ' . $module_action . ' | Id: ' . $$module_name_singular->id);
+        flash(label_case($module_name_singular).' Deleted Successfully!')->success()->important();
+
+        logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
 
         return redirect()->route('backend.menus.show', $menuId);
-    }
-
-    /**
-     * Quick toggle active/visible on a menu item via AJAX.
-     * PATCH /admin/menuitems/{id}/toggle
-     */
-    public function toggle(Request $request, $id)
-    {
-        $item = MenuItem::findOrFail($id);
-        $field = $request->input('field', 'is_active');
-
-        if (!in_array($field, ['is_active', 'is_visible'])) {
-            return response()->json(['error' => 'Invalid field.'], 422);
-        }
-
-        $item->update([$field => !$item->$field]);
-
-        if ($item->menu) {
-            Menu::clearMenuCache($item->menu->location);
-        }
-
-        return response()->json(['success' => true, 'value' => (bool) $item->$field]);
     }
 }
