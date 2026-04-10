@@ -136,11 +136,11 @@
                                     <th class="text-center">{{ __('menu::text.actions') }}</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            {{-- <tbody>
                                 @foreach(${$module_name_singular}->items->sortBy('sort_order') as $item)
                                     @include('menu::backend.menus.partials.menu-item-row', ['item' => $item, 'level' => 0])
                                 @endforeach
-                            </tbody>
+                            </tbody> --}}
                         </table>
                     </div>
                 @else

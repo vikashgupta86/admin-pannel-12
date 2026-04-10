@@ -51,6 +51,9 @@ class MenusController extends BackendBaseController
             'items.children.children.children.children',
         ])->findOrFail($id);
 
+
+
+
         logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
 
         return view(
