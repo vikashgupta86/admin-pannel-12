@@ -3,5 +3,6 @@
     "Category": true,
     "Tag": true,
     "Menu": true,
-    "RRDR": true
+    "RRDR": false,
+    "Content": true
 }

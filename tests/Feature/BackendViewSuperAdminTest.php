@@ -121,6 +121,18 @@ class BackendViewSuperAdminTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_super_admin_user_can_access_backup_route_from_dashboard(): void
+    {
+        $response = $this->get('/admin/dashboard');
+        $response->assertStatus(200);
+        $response->assertSee('Create Backup');
+
+        $backupResponse = $this->get('/admin/backups/backup');
+
+        $backupResponse->assertStatus(302);
+        $backupResponse->assertSessionHas('error');
+    }
+
     /**
      * Users Test.
      *

@@ -15,7 +15,7 @@
             <div class="mb-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 lg:mb-16">
                 <a
                     class="inline-flex items-center justify-center rounded-lg bg-gray-700 px-5 py-3 text-center text-base font-medium text-white hover:bg-gray-800 focus:ring-4 focus:ring-gray-300"
-                    href="#"
+                    href="https://github.com/nasirkhan/laravel-starter"
                     target="_blank"
                 >
                     <svg
@@ -93,28 +93,28 @@
             <div class="rounded-lg p-3 shadow-lg sm:p-10 dark:bg-gray-800">
                 <img
                     loading="lazy"
-                    src="#/assets/396987/1cf5ce5a-f374-4bae-b5a3-69e8d7ff684d"
+                    src="https://github.com/nasirkhan/laravel-starter/assets/396987/1cf5ce5a-f374-4bae-b5a3-69e8d7ff684d"
                     alt="Page preview"
                 />
             </div>
             <div class="rounded-lg p-3 shadow-lg sm:p-10 dark:bg-gray-800">
                 <img
                     loading="lazy"
-                    src="#/assets/396987/93341711-60dd-4624-8cd7-82f1c611287d"
+                    src="https://github.com/nasirkhan/laravel-starter/assets/396987/93341711-60dd-4624-8cd7-82f1c611287d"
                     alt="Page preview"
                 />
             </div>
             <div class="rounded-lg p-3 shadow-lg sm:p-10 dark:bg-gray-800">
                 <img
                     loading="lazy"
-                    src="#/assets/396987/0f6b8201-6f6a-429f-894b-4e491cc5eba4"
+                    src="https://github.com/nasirkhan/laravel-starter/assets/396987/0f6b8201-6f6a-429f-894b-4e491cc5eba4"
                     alt="Page preview"
                 />
             </div>
             <div class="rounded-lg p-3 shadow-lg sm:p-10 dark:bg-gray-800">
                 <img
                     loading="lazy"
-                    src="#/assets/396987/f8131011-2ecc-4a11-961f-85e02cb8f7a1"
+                    src="https://github.com/nasirkhan/laravel-starter/assets/396987/f8131011-2ecc-4a11-961f-85e02cb8f7a1"
                     alt="Page preview"
                 />
             </div>

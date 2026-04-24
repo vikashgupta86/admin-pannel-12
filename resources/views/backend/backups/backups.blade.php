@@ -24,8 +24,11 @@
                 <x-slot name="toolbar">
                     <x-backend.buttons.return-back :small="true" />
                     @can("add_" . $module_name)
-                        <x-backend.buttons.create route='{{ route("backend.$module_name.create") }}'
-                            title="{{ __(ucwords(Str::singular($module_name))) }} {{ __('Create') }}" :small="true" />
+                        <x-backend.buttons.create
+                            route='{{ route("backend.$module_name.create") }}'
+                            title="{{ __(ucwords(Str::singular($module_name))) }} {{ __('Create') }}"
+                            :small="true"
+                        />
                     @endcan
                 </x-slot>
             </x-backend.section-header>
@@ -75,17 +78,23 @@
                                                 {{ $backup["date_ago"] }}
                                             </td>
                                             <td class="text-end">
-                                                <a href="{{ route("backend.$module_name.download", $backup["file_name"]) }}"
-                                                    class="btn btn-primary btn-sm m-1" data-toggle="tooltip"
-                                                    title="@lang("Download File")">
+                                                <a
+                                                    href="{{ route("backend.$module_name.download", $backup["file_name"]) }}"
+                                                    class="btn btn-primary btn-sm m-1"
+                                                    data-toggle="tooltip"
+                                                    title="@lang("Download File")"
+                                                >
                                                     <i class="fas fa-cloud-download-alt"></i>
                                                     &nbsp;
                                                     @lang("Download")
                                                 </a>
 
-                                                <a href="{{ route("backend.$module_name.delete", $backup["file_name"]) }}"
-                                                    class="btn btn-danger btn-sm m-1" data-toggle="tooltip"
-                                                    title="@lang("Delete File")">
+                                                <a
+                                                    href="{{ route("backend.$module_name.delete", $backup["file_name"]) }}"
+                                                    class="btn btn-danger btn-sm m-1"
+                                                    data-toggle="tooltip"
+                                                    title="@lang("Delete File")"
+                                                >
                                                     <i class="fas fa-trash"></i>
                                                     &nbsp;
                                                     @lang("Delete")

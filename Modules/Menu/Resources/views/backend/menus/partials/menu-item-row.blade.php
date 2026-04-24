@@ -1,62 +1,69 @@
-<tr data-id="{{ $item->id }}" data-parent-id="{{ $item->parent_id ?? '' }}">
-    <td class="text-center" style="width:30px; cursor:grab">
-        <i class="fas fa-grip-vertical text-muted drag-handle"></i>
-    </td>
+@php
+    $indent = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $level);
+@endphp
+
+<tr>
+    <td>{{ $item->sort_order }}</td>
     <td>
-        @for($i = 0; $i < $level; $i++)
-            <span class="ms-3"></span>
-        @endfor
-        @if($level > 0)
-            <i class="fas fa-angle-right text-muted me-1"></i>
-        @endif
+        {!! $indent !!}
         @if($item->icon)
-            <i class="{{ $item->icon }} me-1"></i>
+            <i class="{{ $item->icon }}"></i>
         @endif
-        <strong>{{ $item->name }}</strong>
-        @if($item->badge_text)
-            <span class="badge bg-{{ $item->badge_color ?? 'secondary' }} ms-1">{{ $item->badge_text }}</span>
+        {{ $item->name }}
+        @if($item->children->count() > 0)
+            <span class="badge bg-info ms-1">{{ $item->children->count() }} child{{ $item->children->count() > 1 ? 'ren' : '' }}</span>
         @endif
     </td>
     <td>
-        <span class="badge bg-light text-dark border">{{ $item->type }}</span>
+        <span class="badge bg-secondary">{{ ucfirst($item->type) }}</span>
     </td>
-    <td class="text-muted small font-monospace">
-        {{ Str::limit($item->url ?? $item->route_name ?? '—', 40) }}
+    <td>
+        @if($item->url)
+            <span class="text-muted">URL:</span> {{ Str::limit($item->url, 30) }}
+        @elseif($item->route_name)
+            <span class="text-muted">Route:</span> {{ $item->route_name }}
+        @else
+            <span class="text-muted">-</span>
+        @endif
         @if($item->opens_new_tab)
             <i class="fas fa-external-link-alt text-muted ms-1" title="Opens in new tab"></i>
         @endif
     </td>
     <td>
-        @if($item->is_active && $item->is_visible)
-            <span class="badge bg-success">Active</span>
-        @elseif(!$item->is_active)
-            <span class="badge bg-warning text-dark">Inactive</span>
+        @if($item->is_active)
+            <span class="badge bg-success">{{ __('menu::text.active') }}</span>
         @else
-            <span class="badge bg-secondary">Hidden</span>
+            <span class="badge bg-warning">{{ __('menu::text.inactive') }}</span>
+        @endif
+        
+        @if($item->is_visible)
+            <span class="badge bg-primary">{{ __('menu::text.visible') }}</span>
+        @else
+            <span class="badge bg-secondary">{{ __('menu::text.hidden') }}</span>
         @endif
     </td>
     <td class="text-center">
-        <div class="btn-group btn-group-sm">
-            <a href="{{ route('backend.menuitems.edit', $item->id) }}"
-               class="btn btn-outline-primary" title="Edit">
-                <i class="fas fa-pencil-alt"></i>
-            </a>
-            <a href="{{ route('backend.menuitems.show', $item->id) }}"
-               class="btn btn-outline-secondary" title="View">
+        <div class="btn-group btn-group-sm" role="group">
+            <a href="{{ route('backend.menuitems.show', $item->id) }}" class="btn btn-outline-primary btn-sm" title="View">
                 <i class="fas fa-eye"></i>
             </a>
-            <form action="{{ route('backend.menuitems.destroy', $item->id) }}"
-                  method="POST" class="d-inline"
-                  onsubmit="return confirm('Delete \'{{ $item->name }}\'?')">
-                @csrf @method('DELETE')
-                <button type="submit" class="btn btn-outline-danger" title="Delete">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </form>
+            <a href="{{ route('backend.menuitems.edit', $item->id) }}" class="btn btn-outline-warning btn-sm" title="Edit">
+                <i class="fas fa-edit"></i>
+            </a>
+            @if($item->children->count() == 0)
+                <form method="POST" action="{{ route('backend.menuitems.destroy', $item->id) }}" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this menu item?')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            @endif
         </div>
     </td>
 </tr>
-@if($item->children && $item->children->count() > 0)
+
+@if($item->children->count() > 0)
     @foreach($item->children->sortBy('sort_order') as $child)
         @include('menu::backend.menus.partials.menu-item-row', ['item' => $child, 'level' => $level + 1])
     @endforeach

@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -92,8 +94,7 @@ class BackupController extends Controller
     /**
      * Creates a new backup for the module.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function create()
     {
@@ -133,6 +134,155 @@ class BackupController extends Controller
 
             return redirect()->back();
         }
+    }
+
+    /**
+     * Run a custom SQL backup for the current database.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function backup()
+    {
+        $defaultConnection = config('database.default');
+
+        if ($defaultConnection === 'mysql') {
+            return $this->backupMySQL();
+        } elseif ($defaultConnection === 'sqlite') {
+            return $this->backupSQLite();
+        } else {
+            return back()->with('error', 'Database backup currently supports only MySQL and SQLite.');
+        }
+    }
+
+    private function backupMySQL()
+    {
+        $backupDir = base_path('database/backups');
+        File::ensureDirectoryExists($backupDir);
+
+        $filename = sprintf('backup-%s.sql', now()->format('Ymd-His'));
+        $backupPath = $backupDir . DIRECTORY_SEPARATOR . $filename;
+
+        try {
+            $pdo = DB::connection()->getPdo();
+            $database = config('database.connections.' . config('database.default') . '.database');
+
+            $sql = "-- Database Backup: {$database}\n";
+            $sql .= "-- Generated: " . now()->toDateTimeString() . "\n\n";
+            $sql .= "SET FOREIGN_KEY_CHECKS=0;\n\n";
+
+            $tables = $pdo->query("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")->fetchAll(\PDO::FETCH_COLUMN);
+
+            foreach ($tables as $table) {
+                $createStmt = $pdo->query("SHOW CREATE TABLE `{$table}`")->fetch(\PDO::FETCH_ASSOC);
+                $sql .= "DROP TABLE IF EXISTS `{$table}`;\n";
+                $sql .= $createStmt['Create Table'] . ";\n\n";
+
+                $offset = 0;
+                $chunkSize = 500;
+
+                while (true) {
+                    $rows = $pdo->query("SELECT * FROM `{$table}` LIMIT {$chunkSize} OFFSET {$offset}")->fetchAll(\PDO::FETCH_ASSOC);
+
+                    if (empty($rows)) {
+                        break;
+                    }
+
+                    $columns = '`' . implode('`, `', array_keys($rows[0])) . '`';
+                    $values = [];
+
+                    foreach ($rows as $row) {
+                        $escaped = array_map(function ($val) use ($pdo) {
+                            return is_null($val) ? 'NULL' : $pdo->quote($val);
+                        }, array_values($row));
+                        $values[] = '(' . implode(', ', $escaped) . ')';
+                    }
+
+                    $sql .= "INSERT INTO `{$table}` ({$columns}) VALUES\n";
+                    $sql .= implode(",\n", $values) . ";\n\n";
+
+                    $offset += $chunkSize;
+                }
+            }
+
+            $views = $pdo->query("SHOW FULL TABLES WHERE Table_type = 'VIEW'")->fetchAll(\PDO::FETCH_COLUMN);
+
+            foreach ($views as $view) {
+                $createStmt = $pdo->query("SHOW CREATE VIEW `{$view}`")->fetch(\PDO::FETCH_ASSOC);
+                $sql .= "DROP VIEW IF EXISTS `{$view}`;\n";
+                $sql .= $createStmt['Create View'] . ";\n\n";
+            }
+
+            $sql .= "SET FOREIGN_KEY_CHECKS=1;\n";
+
+            File::put($backupPath, $sql);
+        } catch (\Throwable $e) {
+            Log::error('Database backup error', ['exception' => $e->getMessage()]);
+
+            return back()->with('error', 'Database backup encountered an error.');
+        }
+
+        return back()->with('success', "Database backup saved to database/backups/{$filename}");
+    }
+
+    private function backupSQLite()
+    {
+        $backupDir = base_path('database/backups');
+        File::ensureDirectoryExists($backupDir);
+
+        $databasePath = config('database.connections.sqlite.database');
+        $filename = sprintf('backup-%s.sqlite', now()->format('Ymd-His'));
+        $backupPath = $backupDir . DIRECTORY_SEPARATOR . $filename;
+
+        try {
+            if (!File::exists($databasePath)) {
+                return back()->with('error', 'SQLite database file not found.');
+            }
+
+            File::copy($databasePath, $backupPath);
+        } catch (\Throwable $e) {
+            Log::error('SQLite backup error', ['exception' => $e->getMessage()]);
+
+            return back()->with('error', 'SQLite backup encountered an error.');
+        }
+
+        return back()->with('success', "SQLite database backup saved to database/backups/{$filename}");
+    }
+
+    private function findMysqlDumpBinary(): ?string
+    {
+        $candidates = [];
+
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $candidates[] = 'mysqldump.exe';
+            $candidates[] = 'C:\\xampp\\mysql\\bin\\mysqldump.exe';
+            $candidates[] = 'C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump.exe';
+            $candidates[] = 'C:\\Program Files\\MySQL\\MySQL Server 5.7\\bin\\mysqldump.exe';
+        } else {
+            $candidates[] = 'mysqldump';
+        }
+
+        foreach ($candidates as $candidate) {
+            if (File::exists($candidate) || $this->commandExists($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    private function commandExists(string $command): bool
+    {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $output = null;
+            $status = null;
+            exec("where {$command} 2>NUL", $output, $status);
+            return $status === 0 && ! empty($output);
+        }
+
+        $output = null;
+        $status = null;
+        exec("command -v {$command} 2>/dev/null", $output, $status);
+        return $status === 0 && ! empty($output);
     }
 
     /**

@@ -4,8 +4,6 @@ $notifications_count = optional($notifications)->count();
 $notifications_latest = optional($notifications)->take(5);
 ?>
 
-
-
 <div class="sidebar sidebar-dark sidebar-fixed border-end" id="sidebar">
     <div class="sidebar-header border-bottom">
         <div class="sidebar-brand d-sm-flex justify-content-center">
@@ -14,12 +12,14 @@ $notifications_latest = optional($notifications)->take(5);
                     class="sidebar-brand-full"
                     src="{{ asset("img/logo-with-text.jpg") }}"
                     alt="{{ app_name() }}"
-                    height="46" />
+                    height="46"
+                />
                 <img
                     class="sidebar-brand-narrow"
                     src="{{ asset("img/logo-square.jpg") }}"
                     alt="{{ app_name() }}"
-                    height="46" />
+                    height="46"
+                />
             </a>
         </div>
         <button
@@ -28,7 +28,8 @@ $notifications_latest = optional($notifications)->take(5);
             data-coreui-theme="dark"
             type="button"
             aria-label="Close"
-            onclick='coreui.Sidebar.getInstance(document.querySelector("#sidebar")).toggle()'></button>
+            onclick='coreui.Sidebar.getInstance(document.querySelector("#sidebar")).toggle()'
+        ></button>
     </div>
 
     {{-- Dynamic Menu from Database --}}
@@ -36,12 +37,11 @@ $notifications_latest = optional($notifications)->take(5);
 
     {{-- Fallback: Load menu items from menu_data.php (in case dynamic menu is empty) --}}
     @php
-    $hasMenuItems = \Modules\Menu\Models\Menu::getCachedMenuData("admin-sidebar", auth()->user())->isNotEmpty();
+        $hasMenuItems = \Modules\Menu\Models\Menu::getCachedMenuData("admin-sidebar", auth()->user())->isNotEmpty();
     @endphp
 
-
     @if (! $hasMenuItems)
-    <x-backend.fallback-sidebar-menu />
+        <x-backend.fallback-sidebar-menu />
     @endif
 
     <div class="sidebar-footer border-top d-none d-md-flex">
